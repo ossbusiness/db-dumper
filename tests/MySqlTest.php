@@ -46,7 +46,7 @@ class MySqlTest extends TestCase
             ->enableCompression()
             ->getDumpCommand('dump.sql', 'credentials.txt');
 
-        $this->assertSame('set -o pipefail && \'mysqldump\' --defaults-extra-file="credentials.txt" --skip-comments --extended-insert dbname | gzip > "dump.sql"', $dumpCommand);
+        $this->assertSame('\'mysqldump\' --defaults-extra-file="credentials.txt" --skip-comments --extended-insert dbname | gzip > "dump.sql"', $dumpCommand);
     }
 
     /** @test */
@@ -59,7 +59,7 @@ class MySqlTest extends TestCase
             ->useCompressor(new GzipCompressor)
             ->getDumpCommand('dump.sql', 'credentials.txt');
 
-        $this->assertSame('set -o pipefail && \'mysqldump\' --defaults-extra-file="credentials.txt" --skip-comments --extended-insert dbname | gzip > "dump.sql"', $dumpCommand);
+        $this->assertSame('\'mysqldump\' --defaults-extra-file="credentials.txt" --skip-comments --extended-insert dbname | gzip > "dump.sql"', $dumpCommand);
     }
 
     /** @test */
@@ -72,7 +72,7 @@ class MySqlTest extends TestCase
             ->useCompressor(new GzipCompressor())
             ->getDumpCommand('/save/to/new (directory)/dump.sql', 'credentials.txt');
 
-        $this->assertSame('set -o pipefail && \'mysqldump\' --defaults-extra-file="credentials.txt" --skip-comments --extended-insert dbname | gzip > "/save/to/new (directory)/dump.sql"', $dumpCommand);
+        $this->assertSame('\'mysqldump\' --defaults-extra-file="credentials.txt" --skip-comments --extended-insert dbname | gzip > "/save/to/new (directory)/dump.sql"', $dumpCommand);
     }
 
     /** @test */
@@ -314,6 +314,18 @@ class MySqlTest extends TestCase
         $dbDumper = MySql::create()->setDbName($dbName)->addExtraOption("--databases {$overridenDbName}");
 
         $this->assertEquals($overridenDbName, $dbDumper->getDbName());
+    }
+
+    /** @test */
+    public function it_can_get_the_name_of_the_db_when_all_databases_was_set_as_an_extra_option()
+    {
+        $dumpCommand = MySql::create()
+            ->setUserName('username')
+            ->setPassword('password')
+            ->addExtraOption('--all-databases')
+            ->getDumpCommand('dump.sql', 'credentials.txt');
+
+        $this->assertSame('\'mysqldump\' --defaults-extra-file="credentials.txt" --skip-comments --extended-insert --all-databases > "dump.sql"', $dumpCommand);
     }
 
     /** @test */

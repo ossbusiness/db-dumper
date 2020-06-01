@@ -268,7 +268,7 @@ class MySql extends DbDumper
             $command[] = '--ignore-table='.implode(' --ignore-table=', $this->excludeTables);
         }
 
-        $command[] = '--max-allowed-packet=1Gb'
+        $command[] = '--max-allowed-packet=1Gb';
 
         $command[] = "{$this->dbName}";
 
